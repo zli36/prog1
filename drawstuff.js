@@ -132,8 +132,8 @@ function drawRandPixelsInInputEllipsoids(context) {
             cy = h*inputEllipsoids[e].y; // ellipsoid center y
             ellipsoidXRadius = Math.round(w*inputEllipsoids[e].a); // x radius
             ellipsoidYRadius = Math.round(h*inputEllipsoids[e].b); // y radius
-            numEllipsoidPixels = ellipsoidXRadius*ellipsoidYRadius*Math.PI; // projected ellipsoid area
-            numEllipsoidPixels *= PIXEL_DENSITY; // percentage of ellipsoid area to render to pixels
+            numEllipsoidPixels = inputEllipsoids[e].a*inputEllipsoids[e].b*Math.PI; // projected ellipsoid area
+            numEllipsoidPixels *= PIXEL_DENSITY * w * h; // percentage of ellipsoid area to render to pixels
             numEllipsoidPixels = Math.round(numEllipsoidPixels);
             //console.log("ellipsoid x radius: "+ellipsoidXRadius);
             //console.log("ellipsoid y radius: "+ellipsoidYRadius);
