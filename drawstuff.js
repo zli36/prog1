@@ -86,14 +86,14 @@ function drawRandPixels(context) {
     context.putImageData(imagedata, 0, 0);
 } // end draw random pixels
 
-// get the input spheres from the standard class URL
-function getInputSpheres() {
-    const INPUT_SPHERES_URL = 
-        "https://ncsucgclass.github.io/prog1/spheres.json";
+// get the input ellipses from the standard class URL
+function getInputEllipses() {
+    const INPUT_ELLIPSES_URL = 
+        "https://ncsucgclass.github.io/prog1/ellipses.json";
         
-    // load the spheres file
+    // load the ellipses file
     var httpReq = new XMLHttpRequest(); // a new http request
-    httpReq.open("GET",INPUT_SPHERES_URL,false); // init the request
+    httpReq.open("GET",INPUT_ELLIPSES_URL,false); // init the request
     httpReq.send(null); // send the request
     var startTime = Date.now();
     while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
@@ -101,36 +101,38 @@ function getInputSpheres() {
             break;
     } // until its loaded or we time out after three seconds
     if ((httpReq.status !== 200) || (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        console.log*("Unable to open input spheres file!");
+        console.log*("Unable to open input ellipses file!");
         return String.null;
     } else
         return JSON.parse(httpReq.response); 
 } // end get input spheres
 
-// put random points in the spheres from the class github
-function drawRandPixelsInInputSpheres(context) {
-    var inputSpheres = getInputSpheres();
+// put random points in the ellipses from the class github
+function drawRandPixelsInInputEllipses(context) {
+    var inputSpheres = getInputEllipses();
     var w = context.canvas.width;
     var h = context.canvas.height;
     var imagedata = context.createImageData(w,h);
     const PIXEL_DENSITY = 0.1;
     var numCanvasPixels = (w*h)*PIXEL_DENSITY; 
     
-    if (inputSpheres != String.null) { 
+    if (inputEllipses != String.null) { 
         var x = 0; var y = 0; // pixel coord init
         var cx = 0; var cy = 0; // init center x and y coord
-        var sphereRadius = 0; // init sphere radius
-        var numSpherePixels = 0; // init num pixels in sphere
-        var c = new Color(0,0,0,0); // init the sphere color
-        var n = inputSpheres.length;
-        //console.log("number of spheres: " + n);
+        var ellipseXRadius = 0; // init ellipse x radius
+        var ellipseYRadius = 0; // init ellipse y radius
+        var numEllipsePixels = 0; // init num pixels in ellipse
+        var c = new Color(0,0,0,0); // init the ellipse color
+        var n = inputEllipses.length; // the number of input ellipses
+        //console.log("number of ellipses: " + n);
 
-        // Loop over the spheres, draw rand pixels in each
-        for (var s=0; s<n; s++) {
-            cx = w*inputSpheres[s].x; // sphere center x
-            cy = h*inputSpheres[s].y; // sphere center y
-            sphereRadius = Math.round(w*inputSpheres[s].r); // radius
-            numSpherePixels = sphereRadius*4*Math.PI; // sphere area
+        // Loop over the ellipses, draw rand pixels in each
+        for (var e=0; e<n; e++) {
+            cx = w*inputEllipses[s].x; // ellipse center x
+            cy = h*inputEllipses[s].y; // ellipse center y
+            ellipseXRadius = Math.round(w*inputEllipses[s].a); // x radius
+            ellipseYRadius = Math.round(h*inputEllipses[s].b); // y radius
+            numEllipsePixels = sphereRadius*4*Math.PI; // sphere area
             numSpherePixels *= PIXEL_DENSITY; // percentage of sphere on
             numSpherePixels = Math.round(numSpherePixels);
             //console.log("sphere radius: "+sphereRadius);
