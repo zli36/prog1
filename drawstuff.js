@@ -180,12 +180,9 @@ function drawInputEllipsoidsUsingArcs(context) {
                 +","+ Math.floor(inputEllipsoids[e].diffuse[2]*255) +")"; // diffuse color
             context.save(); // remember previous (non-) scale
             context.scale(1, inputEllipsoids[e].b/inputEllipsoids[e].a); // scale by ellipsoid ratio 
+            context.translate(w*inputEllipsoids[e].x,h*inputEllipsoids[e].y);
             context.beginPath();
-            context.arc(
-                Math.round(w*inputEllipsoids[e].x),
-                Math.round(h*inputEllipsoids[e].y),
-                Math.round(w*inputEllipsoids[e].a),
-                0,2*Math.PI);
+            context.arc(0,0,Math.round(w*inputEllipsoids[e].a),0,2*Math.PI);
             context.restore(); // undo scale before fill so stroke width unscaled
             context.fill();
             //console.log(context.fillStyle);
