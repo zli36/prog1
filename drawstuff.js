@@ -86,14 +86,14 @@ function drawRandPixels(context) {
     context.putImageData(imagedata, 0, 0);
 } // end draw random pixels
 
-// get the input ellipses from the standard class URL
-function getInputEllipses() {
-    const INPUT_ELLIPSES_URL = 
-        "https://ncsucgclass.github.io/prog1/ellipses.json";
+// get the input ellipsoids from the standard class URL
+function getInputEllipsoids() {
+    const INPUT_ELLIPSOIDS_URL = 
+        "https://ncsucgclass.github.io/prog1/ellipsoids.json";
         
-    // load the ellipses file
+    // load the ellipsoids file
     var httpReq = new XMLHttpRequest(); // a new http request
-    httpReq.open("GET",INPUT_ELLIPSES_URL,false); // init the request
+    httpReq.open("GET",INPUT_ELLIPSOIDS_URL,false); // init the request
     httpReq.send(null); // send the request
     var startTime = Date.now();
     while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
@@ -105,92 +105,97 @@ function getInputEllipses() {
         return String.null;
     } else
         return JSON.parse(httpReq.response); 
-} // end get input spheres
+} // end get input ellipsoids
 
-// put random points in the ellipses from the class github
-function drawRandPixelsInInputEllipses(context) {
-    var inputSpheres = getInputEllipses();
+// put random points in the ellipsoids from the class github
+function drawRandPixelsInInputEllipsoids(context) {
+    var inputEllipsoids = getInputEllipses();
     var w = context.canvas.width;
     var h = context.canvas.height;
     var imagedata = context.createImageData(w,h);
     const PIXEL_DENSITY = 0.1;
     var numCanvasPixels = (w*h)*PIXEL_DENSITY; 
     
-    if (inputEllipses != String.null) { 
+    if (inputEllipsoids != String.null) { 
         var x = 0; var y = 0; // pixel coord init
         var cx = 0; var cy = 0; // init center x and y coord
-        var ellipseXRadius = 0; // init ellipse x radius
-        var ellipseYRadius = 0; // init ellipse y radius
-        var numEllipsePixels = 0; // init num pixels in ellipse
-        var c = new Color(0,0,0,0); // init the ellipse color
-        var n = inputEllipses.length; // the number of input ellipses
+        var ellipsoidXRadius = 0; // init ellipsoid x radius
+        var ellipsoidYRadius = 0; // init ellipsoid y radius
+        var numEllipsoidPixels = 0; // init num pixels in ellipsoid
+        var c = new Color(0,0,0,0); // init the ellipsoid color
+        var n = inputEllipsoids.length; // the number of input ellipsoids
         //console.log("number of ellipses: " + n);
 
-        // Loop over the ellipses, draw rand pixels in each
+        // Loop over the ellipsoids, draw rand pixels in each
         for (var e=0; e<n; e++) {
-            cx = w*inputEllipses[s].x; // ellipse center x
-            cy = h*inputEllipses[s].y; // ellipse center y
-            ellipseXRadius = Math.round(w*inputEllipses[s].a); // x radius
-            ellipseYRadius = Math.round(h*inputEllipses[s].b); // y radius
-            numEllipsePixels = sphereRadius*4*Math.PI; // sphere area
-            numSpherePixels *= PIXEL_DENSITY; // percentage of sphere on
-            numSpherePixels = Math.round(numSpherePixels);
-            //console.log("sphere radius: "+sphereRadius);
-            //console.log("num sphere pixels: "+numSpherePixels);
+            cx = w*inputEllipsoids[e].x; // ellipsoid center x
+            cy = h*inputEllipsoids[e].y; // ellipsoid center y
+            ellipsoidXRadius = Math.round(w*inputEllipsoids[e].a); // x radius
+            ellipsoidYRadius = Math.round(h*inputEllipsoids[e].b); // y radius
+            numEllipsoidPixels = ellipsoidXRadius*ellipsoidYRadius*Math.PI; // projected ellipsoid area
+            numEllipsoidPixels *= PIXEL_DENSITY; // percentage of ellipsoid area to render to pixels
+            numEllipsoidPixels = Math.round(numEllipsoidPixels);
+            //console.log("ellipsoid x radius: "+ellipsoidXRadius);
+            //console.log("ellipsoid y radius: "+ellipsoidYRadius);
+            //console.log("num ellipsoid pixels: "+numEllipsoidPixels);
             c.change(
-                inputSpheres[s].diffuse[0]*255,
-                inputSpheres[s].diffuse[1]*255,
-                inputSpheres[s].diffuse[2]*255,
-                255); // rand color
-            for (var p=0; p<numSpherePixels; p++) {
+                inputEllipsoids[e].diffuse[0]*255,
+                inputEllipsoids[e].diffuse[1]*255,
+                inputEllipsoids[e].diffuse[2]*255,
+                255); // ellipsoid diffuse color
+            for (var p=0; p<numEllipsoidPixels; p++) {
                 do {
                     x = Math.random()*2 - 1; // in unit square 
                     y = Math.random()*2 - 1; // in unit square
-                } while (Math.sqrt(x*x + y*y) > 1)
+                } while (Math.sqrt(x*x + y*y) > 1) // a circle is also an ellipse
                 drawPixel(imagedata,
-                    cx+Math.round(x*sphereRadius),
-                    cy+Math.round(y*sphereRadius),c);
+                    cx+Math.round(x*ellipsoidXRadius),
+                    cy+Math.round(y*ellipsoidYRadius),c);
                 //console.log("color: ("+c.r+","+c.g+","+c.b+")");
-                //console.log("x: "+Math.round(w*inputSpheres[s].x));
-                //console.log("y: "+Math.round(h*inputSpheres[s].y));
-            } // end for pixels in sphere
-        } // end for spheres
+                //console.log("x: "+Math.round(w*inputEllipsoids[e].x));
+                //console.log("y: "+Math.round(h*inputEllipsoids[e].y));
+            } // end for pixels in ellipsoid
+        } // end for ellipsoids
         context.putImageData(imagedata, 0, 0);
-    } // end if spheres found
-} // end draw rand pixels in input spheres
+    } // end if ellipsoids found
+} // end draw rand pixels in input ellipsoids
 
 // draw 2d projections read from the JSON file at class github
-function drawInputSpheresUsingArcs(context) {
-    var inputSpheres = getInputSpheres();
+function drawInputEllipsoidsUsingArcs(context) {
+    var inputEllipsoids = getInputEllipsoids();
     
     
-    if (inputSpheres != String.null) { 
+    if (inputEllipsoids != String.null) { 
         var c = new Color(0,0,0,0); // the color at the pixel: black
         var w = context.canvas.width;
         var h = context.canvas.height;
-        var n = inputSpheres.length; 
-        //console.log("number of spheres: " + n);
+        var n = inputEllipsoids.length; 
+        //console.log("number of ellipsoids: " + n);
 
-        // Loop over the spheres, draw each in 2d
-        for (var s=0; s<n; s++) {
+        // Loop over the ellipsoids, draw each in 2d
+        for (var e=0; e<n; e++) {
             context.fillStyle = 
-                "rgb(" + Math.floor(inputSpheres[s].diffuse[0]*255)
-                +","+ Math.floor(inputSpheres[s].diffuse[1]*255)
-                +","+ Math.floor(inputSpheres[s].diffuse[2]*255) +")"; // rand color
+                "rgb(" + Math.floor(inputEllipsoids[e].diffuse[0]*255)
+                +","+ Math.floor(inputEllipsoids[e].diffuse[1]*255)
+                +","+ Math.floor(inputEllipsoids[e].diffuse[2]*255) +")"; // diffuse color
+            context.save(); // remember previous (non-) scale
+            context.scale(1, inputEllipsoids[e].b/inputEllipsoids[e].a); // scale by ellipsoid ratio 
             context.beginPath();
             context.arc(
-                Math.round(w*inputSpheres[s].x),
-                Math.round(h*inputSpheres[s].y),
-                Math.round(w*inputSpheres[s].r),
+                Math.round(w*inputEllipsoids[e].x),
+                Math.round(h*inputEllipsoids[e].y),
+                Math.round(w*inputEllipsoids[e].a),
                 0,2*Math.PI);
+            context.restore(); // undo scale before fill so stroke width unscaled
             context.fill();
             //console.log(context.fillStyle);
-            //console.log("x: "+Math.round(w*inputSpheres[s].x));
-            //console.log("y: "+Math.round(h*inputSpheres[s].y));
-            //console.log("r: "+Math.round(w*inputSpheres[s].r));
-        } // end for spheres
-    } // end if spheres found
-} // end draw input spheres
+            //console.log("x: "+Math.round(w*inputEllipsoids[e].x));
+            //console.log("y: "+Math.round(h*inputEllipsoids[e].y));
+            //console.log("a: "+Math.round(w*inputEllipsoids[e].a));
+            //console.log("b: "+Math.round(h*inputEllipsoids[e].b));
+        } // end for ellipsoids
+    } // end if ellipsoids found
+} // end draw input ellipsoids
 
 
 /* main -- here is where execution begins after window load */
@@ -205,9 +210,9 @@ function main() {
     //drawRandPixels(context);
       // shows how to draw pixels
     
-    drawRandPixelsInInputSpheres(context);
+    drawRandPixelsInInputEllipsoids(context);
       // shows how to draw pixels and read input file
       
-    //drawInputSpheresUsingArcs(context);
+    //drawInputEllipsoidsUsingArcs(context);
       // shows how to read input file, but not how to draw pixels
 }
