@@ -426,15 +426,21 @@ function calNormal(center,surfacePos, a, b, c) {
 
 }
 
-//If eyeline intersect with ellipsoid, return t, else return a max number
-function calIntersection(center,pixelPos,eyeLoc,a,b,c){
-    var cm = Vector.scale2(new Vector(1/a, 1/b, 1/c), center);
-    var dm = Vector.scale2(new Vector(1/a, 1/b, 1/c), Vector.subtract(pixelPos, eyeLoc));
-    var em = Vector.scale2(new Vector(1/a, 1/b, 1/c), eyeLoc);
+function calIntersection(center, pixelPos, eyeLoc, a, b, c) {
+    var x0 = center.x;
+    var y0 = center.y;
+    var z0 = center.z;
+    var x1 = pixelPos.x;
+    var y1 = pixelPos.y;
+    var z1 = pixelPos.z;
+    var x2 = eyeLoc.x;
+    var y2 = eyeLoc.y;
+    var z2 = eyeLoc.z;
 
-    var ra = Vector.dot(dm,dm);
-    var rb = 2*Vector.dot(Vector.subtract(em,cm),dm);
-    var rc = (Vector.dot(Vector.subtract(em,cm),Vector.subtract(em,cm))-1);
+
+    var ra = (x1-x2)*(x1-x2)/a/a + (y1-y2)*(y1-y2)/b/b + (z1-z2)*(z1-z2)/c/c;
+    var rb = ((x2-x0)*(x1-x2)/a/a + (y2-y0)*(y1-y2)/b/b + (z2-z0)*(z1-z2)/c/c) * 2;
+    var rc = (x2-x0)*(x2-x0)/a/a + (y2-y0)*(y2-y0)/b/b + (z2-z0)*(z2-z0)/c/c - 1;
 
     var temp = rb*rb - 4*ra*rc;
     if(temp < 0) {
@@ -442,9 +448,10 @@ function calIntersection(center,pixelPos,eyeLoc,a,b,c){
     } else {
         var root1 = (-rb + Math.sqrt(temp))/2/ra;
         var root2 = (-rb - Math.sqrt(temp))/2/ra;
-        var tmp = Math.min(root1,root2);
-        return Math.max(1,tmp);
+        return Math.min(root1,root2);
+        
     }
+
 }
 
 function calSurface(eyeLoc,pixelPos,t){
